@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+go_version=${ASDF_GOLANG_VERSION:-1.22.12}
+
+if [ "$(uname -s)" = "Darwin" ]; then
+  exec env ASDF_GOLANG_VERSION="$go_version" go run -ldflags=-linkmode=external "$script_dir/teambition_app.go" "$@"
+fi
+
+exec env ASDF_GOLANG_VERSION="$go_version" go run "$script_dir/teambition_app.go" "$@"

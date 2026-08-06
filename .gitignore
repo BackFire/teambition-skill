@@ -1,0 +1,10 @@
+# Local credentials
+.env
+.env.*
+*.pem
+*.key
+
+# Local and test artifacts
+.DS_Store
+coverage.out
+*.test
