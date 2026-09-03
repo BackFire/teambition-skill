@@ -3,6 +3,31 @@ set -eu
 
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 go_version=${ASDF_GOLANG_VERSION:-1.22.12}
+credentials_dir=${XDG_CONFIG_HOME:-"$HOME/.config"}/cli-credentials
+
+# Load persistent CLI credentials while preserving explicit caller overrides.
+app_id=${TEAMBITION_APP_ID:-}
+app_secret=${TEAMBITION_APP_SECRET:-}
+org_id=${TEAMBITION_ORG_ID:-}
+operator_id=${TEAMBITION_OPERATOR_ID:-}
+
+set -a
+for credentials_file in \
+  "$credentials_dir/teambition.env" \
+  "$credentials_dir/teambition-app.env"
+do
+  if [ -r "$credentials_file" ]; then
+    . "$credentials_file"
+  fi
+done
+set +a
+
+[ -z "$app_id" ] || TEAMBITION_APP_ID=$app_id
+[ -z "$app_secret" ] || TEAMBITION_APP_SECRET=$app_secret
+[ -z "$org_id" ] || TEAMBITION_ORG_ID=$org_id
+[ -z "$operator_id" ] || TEAMBITION_OPERATOR_ID=$operator_id
+export TEAMBITION_APP_ID TEAMBITION_APP_SECRET TEAMBITION_ORG_ID TEAMBITION_OPERATOR_ID
+unset app_id app_secret org_id operator_id credentials_file credentials_dir
 
 if [ "$(uname -s)" = "Darwin" ]; then
   exec env ASDF_GOLANG_VERSION="$go_version" go run -ldflags=-linkmode=external "$script_dir/teambition_app.go" "$@"

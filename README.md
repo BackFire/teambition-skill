@@ -33,5 +33,8 @@ ASDF_GOLANG_VERSION=1.22.12 go test \
 ## Credentials
 
 Do not commit UserToken, App Secret, JWT, or local environment files. Configure
-the required `TEAMBITION_*` variables outside this repository; see `SKILL.md`
-for the exact requirements.
+the required `TEAMBITION_*` variables outside this repository. The AppToken
+launcher automatically loads `teambition.env` and `teambition-app.env` from
+`${XDG_CONFIG_HOME:-$HOME/.config}/cli-credentials`; explicitly set non-empty
+environment variables take precedence. See `SKILL.md` for the exact
+requirements.

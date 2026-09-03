@@ -3,7 +3,7 @@ name: teambition
 description: >
   Teambition 项目、任务和迭代管理，通过 CLI 直接调用 UserToken 或 AppToken API。用于一切 Teambition 增删改查，以及用户提到 sprint、迭代、移动任务到迭代、project sprint-query 或 task update --sprint-id 时。
 metadata:
-  version: v12.220-0.0.1
+  version: v12.220-0.0.3
 ---
 
 ## 前置条件
@@ -27,6 +27,8 @@ export TEAMBITION_OPERATOR_ID=""  # 写操作需要
 ```
 
 AppToken 操作由 `scripts/teambition_app` 直接调用 OpenAPI，不启动或注册 MCP Server。应用必须获批对应的“迭代搜索”和“更新任务”权限。不得在命令、日志或回复中输出 App Secret、UserToken 或签发的 JWT。
+
+`scripts/teambition_app` 会自动加载 `${XDG_CONFIG_HOME:-$HOME/.config}/cli-credentials/teambition.env` 和 `teambition-app.env`；调用方显式设置的非空 AppToken 环境变量优先。检查配置时应直接执行一次只读 AppToken 查询，不能仅因当前 Shell 未注入 `TEAMBITION_*` 就判定凭据缺失。
 
 ---
 
@@ -79,9 +81,6 @@ scripts/teambition_app project sprint-query \
 scripts/teambition_app project task-query \
   --project-id "PROJECT_ID" --page-size 100
 
-# 查询企业优先级配置
-scripts/teambition_app project priority-query
-
 # 按用户 ID 查询企业成员
 scripts/teambition_app member query --user-id "USER_ID_1,USER_ID_2"
 
@@ -110,6 +109,8 @@ scripts/teambition_app task update \
 AppToken 更新迭代使用 `/v3/task/{taskId}/sprint`。官方 UserToken CLI 使用的 `/sprintId` 路径不在 AppToken 网关暴露，不要替换。
 
 不要对 `project sprint-query` 或 `task update --sprint-id` 重试 UserToken；这两个接口会稳定返回 `UserTokenNotAllowed`。缺少 AppToken 环境变量或应用权限时，明确报告缺少项。
+
+企业优先级查询 `/v3/project/priority/list` 是 UserToken API，使用 `teambition project priority-query --json`。不要将它路由到 `scripts/teambition_app`，否则会额外依赖企业应用权限及版本发布。
 
 **支持的功能**：
 member      企业成员管理，查询当前企业成员信息
