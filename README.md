@@ -13,12 +13,16 @@ for AppToken-only sprint APIs.
 
 ## Install for Codex
 
-Keep this repository in a normal workspace and expose it through Codex's skill
-directory:
+Clone this repository and expose it through Codex's user skill directory:
 
 ```sh
-ln -s /Users/yang/work/teambition-skill /Users/yang/.codex/skills/teambition
+mkdir -p "$HOME/work" "$HOME/.agents/skills"
+git clone https://github.com/BackFire/teambition-skill.git "$HOME/work/teambition-skill"
+ln -s "$HOME/work/teambition-skill" "$HOME/.agents/skills/teambition"
 ```
+
+Install the official `teambition_cli` and configure credentials as described
+in `SKILL.md`. Start a new Codex session to discover the skill.
 
 ## Test
 
@@ -38,3 +42,7 @@ launcher automatically loads `teambition.env` and `teambition-app.env` from
 `${XDG_CONFIG_HOME:-$HOME/.config}/cli-credentials`; explicitly set non-empty
 environment variables take precedence. See `SKILL.md` for the exact
 requirements.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
